@@ -1,0 +1,68 @@
+---
+title: "PA1_template"
+output: html_document
+---
+
+## Loading and Processing the data
+
+```{r loaddata, echo=TRUE}
+data <- read.csv(file = "activity.csv", header = TRUE)
+```
+
+## Mean total number of steps taken per day
+
+```{r totalsteps, echo=TRUE}
+totalSteps <- aggregate(steps ~ date, data, FUN = sum)
+
+hist(totalSteps$steps, 
+     main = "Total no. of steps taken per day", 
+     xlab = "Steps")
+
+meanSteps <- mean(totalSteps$steps, na.rm = TRUE)
+medianSteps <- median(totalSteps$steps, na.rm = TRUE)
+```
+
+```{r print, echo=FALSE}
+cat("Mean Steps = ", meanSteps)
+cat("Median Steps = ", medianSteps)
+```
+
+## Average daily activity pattern
+
+```{r averagePattern, echo=TRUE}
+fiveMinuteInterval <- aggregate(steps ~ interval, data, FUN = mean, na.rm = TRUE)
+
+plot(fiveMinuteInterval$interval, fiveMinuteInterval$steps, type = "l")
+```
+
+5-minute interval across all days with the maximum number of steps
+```{r averageinterval, echo=TRUE}
+maxVal <- fiveMinuteInterval[which.max(fiveMinuteInterval$steps), ]
+maxVal
+```
+## Imputing missing values
+
+```{r reportMissingValues, echo=TRUE}
+missingVals <- sum(is.na(data$steps))
+cat('Total missing values = ', missingVals)
+```
+
+```{r replaceMissingValues, echo=TRUE}
+positions <- which(is.na(data()$steps))
+mean <- rep(mean(data$steps, na.rm=TRUE), times=length(positions))
+data[positions, "steps"] <- mean
+```
+
+```{r histogram, echo=TRUE}
+histogram <- aggregate(steps ~ date, data, FUN=sum)
+hist(histogram$steps,
+     main = "Imputed Number of Steps Per Day",
+     xlab = "Number of Steps")
+```
+
+Mean and median no. of steps taken per day
+```{r mean, echo=TRUE}
+impMeanSteps <- mean(histogram$steps, na.rm = TRUE)
+impMedSteps <- median(histogram$steps, na.rm = TRUE)
+cat("Mean = ", impMeanSteps, "Median = ", impMedSteps)
+```
